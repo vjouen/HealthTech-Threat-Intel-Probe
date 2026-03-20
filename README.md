@@ -8,7 +8,7 @@ Contexte du Projet
 Ce projet a été réalisé dans le cadre d'une étude de risques (méthode EBIOS RM) pour une infrastructure de santé fictive. 
 L'objectif était de réduire le risque résiduel face aux menaces de type Ransomware et compromission de la Supply Chain.
 
-Fonctionnalités du script
+Fonctionnalités du script :
 
 Ce script Python agit comme une sonde d'analyse :
 
@@ -26,10 +26,22 @@ API REST (VirusTotal)
 
 OSINT / Threat Intelligence
 
-Comment l'utiliser
+Comment l'utiliser :
 
 Cloner le dépôt.
 
-Insérer votre clé API VirusTotal dans le fichier config.py.
+Insérer votre clé API VirusTotal dans le fichier AUTOMATIQUE.py.
 
-Lancer la commande python sonde.py.
+Dans le même dossier que le script Python, crée un nouveau fichier texte simple
+Nomme-le : "ips_suspectes.txt"
+
+Ajouter quelques IPs (une par ligne) pour tester, par exemple :
+
+8.8.8.8
+
+185.220.101.43
+
+1.1.1.1
+
+Lancer le script Python.
+
