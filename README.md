@@ -28,20 +28,9 @@ OSINT / Threat Intelligence
 
 Comment l'utiliser :
 
-Cloner le dépôt.
+Cloner le dépôt "Sonde python"
 
 Insérer votre clé API VirusTotal dans le fichier AUTOMATIQUE.py.
-
-Dans le même dossier que le script Python, crée un nouveau fichier texte simple.
-Nomme-le : "ips_suspectes.txt"
-
-Ajouter quelques IPs (une par ligne) pour tester, par exemple :
-
-8.8.8.8
-
-185.220.101.43
-
-1.1.1.1
 
 Lancer le script Python.
 
@@ -65,3 +54,7 @@ Dans "Programme/script", tape "python".
 Dans "Ajouter des arguments", mets le nom de ton script : AUTOMATIQUE.py.
 
 Dans "Commencer dans", mets le chemin du dossier où se trouve ton script
+
+Ce dépôt ne contient pas seulement du code, mais la réponse technique à une analyse de risques formelle.
+Vous trouverez dans le dossier "Livrable GRC" l'étude EBIOS RM complète
+
