@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediLink - Analyse Interactive EBIOS RM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC; /* Slate-50 */
+            color: #334155; /* Slate-700 */
+            scroll-behavior: smooth;
+        }
+
+        /* --- Chart Containers (Responsive & Constrained) --- */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%; 
+            height: 300px; /* Base height */
+            max-height: 400px;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* --- UI Components --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .nav-item {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: #2563EB; /* Blue-600 */
+            transition: width 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #2563EB;
+        }
+        
+        .nav-item.active::after {
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .risk-critique { background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .risk-eleve { background-color: #FFEDD5; color: #9A3412; border: 1px solid #FED7AA; }
+        .risk-faible { background-color: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+        
+        .scenario-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .mitre-tag {
+            background-color: #F1F5F9;
+            color: #475569;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            border: 1px solid #E2E8F0;
+        }
+
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Chosen Palette: Modern Corporate (Slate & Blue) -->
+    <!-- Application Structure Plan: 
+         Structure "Dashboard Analytique".
+         1. Header: Navigation simple.
+         2. Main: 4 Vues (Overview, Ecosystem, Scenarios, Mitigation).
+            - Overview: KPI instantanés + Résumé contexte.
+            - Ecosystem: Focus sur la Supply Chain (Radar).
+            - Scenarios: Détail des attaques (Cartes interactives).
+            - Mitigation: Le "ROI" de la sécurité (Avant/Après graphique).
+         Justification: Permet au recruteur de scanner l'info (Overview) puis de creuser (Scenarios) sans scroll infini.
+    -->
+    <!-- Visualization & Content Choices:
+         - Donut Chart: Pour l'impact immédiat des niveaux de risque.
+         - Radar Chart: Pour comparer visuellement les profils de menace des partenaires (AWS vs InfoPro).
+         - Bar Chart: Pour prouver l'efficacité du plan d'action (Risque Résiduel).
+         - HTML/CSS Cards: Pour les scénarios, plus lisible que du texte brut.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- NAVIGATION -->
+    <nav class="sticky top-0 z-50 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <div class="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-sm">M</div>
+                        <span class="font-bold text-xl tracking-tight text-slate-900">MediLink <span class="text-blue-600 font-light">RiskView</span></span>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-8 items-center">
+                    <button onclick="switchTab('overview')" class="nav-item active px-1 pt-1 text-sm font-medium text-slate-500 hover:text-slate-900">Vue d'Ensemble</button>
+                    <button onclick="switchTab('ecosystem')" class="nav-item px-1 pt-1 text-sm font-medium text-slate-500 hover:text-slate-900">Écosystème</button>
+                    <button onclick="switchTab('scenarios')" class="nav-item px-1 pt-1 text-sm font-medium text-slate-500 hover:text-slate-900">Scénarios</button>
+                    <button onclick="switchTab('mitigation')" class="nav-item px-1 pt-1 text-sm font-medium text-slate-500 hover:text-slate-900">Traitement</button>
+                </div>
+                <!-- Mobile menu button placeholder -->
+                <div class="flex items-center sm:hidden">
+                    <button type="button" class="text-slate-500 hover:text-slate-900 focus:outline-none p-2" onclick="alert('Vue optimisée pour Desktop/Tablette. Utilisez les onglets ci-dessus sur un écran plus large.')">
+                        <span class="sr-only">Menu</span>
+                        ☰
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: OVERVIEW -->
+        <section id="overview" class="tab-content active space-y-6">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+                <div class="max-w-3xl">
+                    <h1 class="text-3xl font-bold text-slate-900 mb-2">Analyse de Risque Cyber - MediLink</h1>
+                    <p class="text-slate-500 mb-6">Contexte : Startup HealthTech • Données de Santé (HDS) • Méthodologie EBIOS RM</p>
+                    <p class="text-slate-700 leading-relaxed">
+                        Cette interface interactive présente les résultats de l'analyse de risques menée sur l'infrastructure critique de MediLink. 
+                        Elle met en lumière les vulnérabilités de la chaîne d'approvisionnement (Supply Chain) et propose un plan de traitement incluant 
+                        l'automatisation de la détection via <span class="font-semibold text-blue-600">Scripting Python</span>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Risques Critiques</div>
+                    <div class="text-3xl font-bold text-red-600">2</div>
+                    <div class="text-xs text-slate-500 mt-1">Avant traitement</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Scénarios</div>
+                    <div class="text-3xl font-bold text-slate-800">2</div>
+                    <div class="text-xs text-slate-500 mt-1">Supply Chain & Phishing</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Mesures PACS</div>
+                    <div class="text-3xl font-bold text-blue-600">4</div>
+                    <div class="text-xs text-slate-500 mt-1">Plan d'Action Sécurité</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Risque Résiduel</div>
+                    <div class="text-3xl font-bold text-green-600">Faible</div>
+                    <div class="text-xs text-slate-500 mt-1">Après mesures</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Chart: Initial Risk Distribution -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 lg:col-span-1">
+                    <h3 class="font-bold text-slate-800 mb-4">Répartition Initiale des Risques</h3>
+                    <div class="chart-container">
+                        <canvas id="chartRiskDist"></canvas>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs text-slate-400">100% des risques identifiés sont majeurs</span>
+                    </div>
+                </div>
+
+                <!-- Context: Valeurs Métiers -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 lg:col-span-2">
+                    <h3 class="font-bold text-slate-800 mb-4">Périmètre Critique (Valeurs Métiers)</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start p-4 bg-slate-50 rounded-lg border-l-4 border-red-500">
+                            <div class="ml-3">
+                                <h4 class="text-sm font-bold text-slate-900">VM1 : Base de Données Patients</h4>
+                                <p class="text-sm text-slate-600 mt-1">Données HDS, Dossiers médicaux. Impact critique sur la confidentialité et l'image.</p>
+                                <div class="mt-2 flex gap-2">
+                                    <span class="text-xs bg-white border border-slate-200 px-2 py-1 rounded text-slate-500">Support: AWS Cloud</span>
+                                    <span class="text-xs bg-white border border-slate-200 px-2 py-1 rounded text-slate-500">Menace: Fuite massive</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-start p-4 bg-slate-50 rounded-lg border-l-4 border-orange-400">
+                            <div class="ml-3">
+                                <h4 class="text-sm font-bold text-slate-900">VM2 : Service de Prise de Rendez-vous</h4>
+                                <p class="text-sm text-slate-600 mt-1">Continuité d'activité opérationnelle. Impact fort sur la disponibilité.</p>
+                                <div class="mt-2 flex gap-2">
+                                    <span class="text-xs bg-white border border-slate-200 px-2 py-1 rounded text-slate-500">Support: API Web</span>
+                                    <span class="text-xs bg-white border border-slate-200 px-2 py-1 rounded text-slate-500">Menace: Ransomware</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: ECOSYSTEM -->
+        <section id="ecosystem" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+                <div class="max-w-3xl">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Analyse de la Surface d'Attaque (Parties Prenantes)</h2>
+                    <p class="text-slate-600">
+                        L'analyse révèle que le danger ne vient pas de l'hébergeur principal (AWS), mais des tiers de confiance moins matures.
+                        Le graphique ci-dessous compare le profil de risque de nos partenaires.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Radar Chart -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center">
+                    <h3 class="font-bold text-slate-800 mb-6 w-full text-left">Profils de Risque Partenaires</h3>
+                    <div class="chart-container" style="max-width: 500px;">
+                        <canvas id="chartRadarThreat"></canvas>
+                    </div>
+                    <div class="mt-6 text-sm text-slate-500 text-center max-w-sm">
+                        <em>Interprétation : Une surface large indique un profil à haut risque (Forte pénétration + Faible maturité).</em>
+                    </div>
+                </div>
+
+                <!-- Analysis Cards -->
+                <div class="space-y-4">
+                    <!-- InfoPro -->
+                    <div class="bg-red-50 border border-red-100 rounded-xl p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg font-bold text-red-900">InfoPro (Prestataire IT)</h3>
+                                <div class="text-xs font-bold text-red-700 uppercase tracking-wide mt-1">Zone Danger</div>
+                            </div>
+                            <span class="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Score: 2.0</span>
+                        </div>
+                        <p class="text-red-800 mt-3 text-sm leading-relaxed">
+                            Ce partenaire dispose de droits d'administration élevés (Pénétration: 4/4) mais d'une maturité cyber faible (2/4). 
+                            Il représente le vecteur idéal pour une <strong>Attaque par Rebond (Supply Chain Attack)</strong>.
+                        </p>
+                    </div>
+
+                    <!-- AWS -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg font-bold text-blue-900">AWS (Cloud Provider)</h3>
+                                <div class="text-xs font-bold text-blue-700 uppercase tracking-wide mt-1">Zone Veille</div>
+                            </div>
+                            <span class="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded">Score: 0.75</span>
+                        </div>
+                        <p class="text-blue-800 mt-3 text-sm leading-relaxed">
+                            Malgré une dépendance critique (4/4), la maturité excellente d'AWS (4/4) réduit drastiquement la probabilité d'une compromission directe de l'infrastructure physique.
+                        </p>
+                    </div>
+
+                    <!-- Clinique -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 opacity-75">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-700">Clinique (Clients)</h3>
+                                <div class="text-xs font-bold text-slate-500 uppercase tracking-wide mt-1">Zone Contrôle</div>
+                            </div>
+                            <span class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-1 rounded">Score: 1.0</span>
+                        </div>
+                        <p class="text-slate-600 mt-3 text-sm">
+                            Vecteur potentiel de phishing, mais accès limités au système (Pénétration: 1/4).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: SCENARIOS -->
+        <section id="scenarios" class="tab-content space-y-6">
+            <div class="max-w-3xl">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Scénarios d'Attaque (Kill Chain)</h2>
+                <p class="text-slate-600 mb-6">Détail des modes opératoires retenus basés sur le framework MITRE ATT&CK.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- SCENARIO 1 -->
+                <div class="scenario-card bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                    <div class="h-1 bg-red-500 w-full"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-bold text-slate-900">SO1 : Supply Chain Attack</h3>
+                            <span class="status-pill risk-eleve">Vraisemblable (V3)</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6">
+                            L'attaquant compromet le prestataire informatique pour utiliser ses accès VPN légitimes et contourner les défenses périmétriques.
+                        </p>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">1</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-slate-800">Accès Initial</div>
+                                    <div class="mitre-tag inline-block mt-1">T1195 Trusted Relationship</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">2</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-slate-800">Découverte</div>
+                                    <div class="mitre-tag inline-block mt-1">T1046 Network Scan</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">3</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-slate-800">Mouvement Latéral</div>
+                                    <div class="mitre-tag inline-block mt-1">T1021 Remote Services (VPN)</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">4</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-slate-800">Exfiltration</div>
+                                    <div class="mitre-tag inline-block mt-1">T1041 Exfil over C2</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-slate-100">
+                            <span class="text-xs font-bold text-red-600">Impact : Fuite massive de données (Confidentialité)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCENARIO 2 -->
+                <div class="scenario-card bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                    <div class="h-1 bg-purple-600 w-full"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-bold text-slate-900">SO2 : Phishing & Ransomware</h3>
+                            <span class="status-pill risk-critique">Quasi-Certain (V4)</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6">
+                            Vol d'identifiants administrateur suivi du déploiement d'un malware qui communique avec un serveur de commande (C2) avant chiffrement.
+                        </p>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">1</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-slate-800">Reconnaissance</div>
+                                    <div class="mitre-tag inline-block mt-1">T1593 OSINT (LinkedIn)</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">2</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-slate-800">Accès Initial</div>
+                                    <div class="mitre-tag inline-block mt-1">T1566 Phishing</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-xs font-bold text-red-600 animate-pulse">!</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-red-700">Command & Control (C2)</div>
+                                    <div class="mitre-tag inline-block mt-1 border-red-200 bg-red-50 text-red-800">T1071 Web Protocols</div>
+                                    <div class="text-[10px] text-red-600 mt-1 italic">Point de détection par le script Python</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">4</div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-bold text-slate-800">Impact</div>
+                                    <div class="mitre-tag inline-block mt-1">T1486 Data Encrypted</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-slate-100">
+                            <span class="text-xs font-bold text-purple-700">Impact : Indisponibilité totale (Ransomware)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 4: MITIGATION -->
+        <section id="mitigation" class="tab-content space-y-8">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+                <div class="max-w-3xl">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Plan de Traitement (PACS) & Risque Résiduel</h2>
+                    <p class="text-slate-600">
+                        Détail des mesures mises en œuvre pour réduire la criticité des risques. L'impact combiné des mesures techniques (Script) et organisationnelles (MFA) permet d'atteindre un niveau de risque acceptable.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Bar Chart: Residual Risk -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-6">Réduction du Risque (Brut vs Résiduel)</h3>
+                    <div class="chart-container">
+                        <canvas id="chartResidual"></canvas>
+                    </div>
+                </div>
+
+                <!-- Measures List -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
+                    <h3 class="font-bold text-slate-800 mb-4">Mesures Prioritaires</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Mesure Star -->
+                        <div class="p-4 border border-blue-100 bg-blue-50 rounded-lg">
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="text-sm font-bold text-blue-900">Sonde de Détection C2 (Script Python)</div>
+                                <span class="text-[10px] font-bold bg-blue-200 text-blue-800 px-2 py-1 rounded">Défense</span>
+                            </div>
+                            <p class="text-xs text-blue-800 opacity-90 mb-2">Automatisation du contrôle des flux sortants via API VirusTotal.</p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span class="text-[10px] font-bold text-slate-500">STATUT : DÉVELOPPÉ (POC)</span>
+                            </div>
+                        </div>
+
+                        <!-- Mesure MFA -->
+                        <div class="p-4 border border-slate-100 rounded-lg">
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="text-sm font-bold text-slate-800">MFA Obligatoire</div>
+                                <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded">Protection</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-2">Double authentification sur tous les accès distants.</p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                                <span class="text-[10px] font-bold text-slate-400">STATUT : À FAIRE</span>
+                            </div>
+                        </div>
+
+                        <!-- Mesure Backup -->
+                        <div class="p-4 border border-slate-100 rounded-lg">
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="text-sm font-bold text-slate-800">Sauvegardes Déconnectées</div>
+                                <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded">Résilience</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-2">Politique 3-2-1 pour contrer les ransomwares.</p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                                <span class="text-[10px] font-bold text-slate-400">STATUT : PLANIFIÉ (J2)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-slate-400">
+                Analyse réalisée par <strong>Valerian Jouen</strong> • EBIOS Risk Manager • 2026
+            </p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            // Highlight current button (simple logic based on onclick attr matching)
+            const buttons = document.querySelectorAll('.nav-item');
+            buttons.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Re-render charts if hidden (Chart.js sometimes needs resize on visibility change)
+            // But with simple CSS display none/block, it's usually fine.
+        }
+
+        // --- CHARTS CONFIGURATION ---
+        // Common Options
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748B';
+
+        // 1. Initial Risk Distribution (Donut)
+        const ctxRiskDist = document.getElementById('chartRiskDist').getContext('2d');
+        new Chart(ctxRiskDist, {
+            type: 'doughnut',
+            data: {
+                labels: ['Critique (R2)', 'Élevé (R1)', 'Moyen', 'Faible'],
+                datasets: [{
+                    data: [50, 50, 0, 0], // From report: 1 Critique, 1 Elevé
+                    backgroundColor: ['#DC2626', '#EA580C', '#F59E0B', '#10B981'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20 }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // 2. Threat Radar (Ecosystem)
+        const ctxRadar = document.getElementById('chartRadarThreat').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Dépendance', 'Pénétration', 'Maturité (Inv)', 'Confiance (Inv)'],
+                // Note: Inverted maturity/trust so high value = high risk on the chart for visual consistency
+                datasets: [
+                    {
+                        label: 'InfoPro (Prestataire IT)',
+                        data: [3, 4, 3, 2], // High risk profile
+                        fill: true,
+                        backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                        borderColor: 'rgb(220, 38, 38)',
+                        pointBackgroundColor: 'rgb(220, 38, 38)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(220, 38, 38)'
+                    },
+                    {
+                        label: 'AWS (Cloud)',
+                        data: [4, 2, 1, 1], // Low risk profile (High maturity = Low value here)
+                        fill: true,
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderColor: 'rgb(37, 99, 235)',
+                        pointBackgroundColor: 'rgb(37, 99, 235)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(37, 99, 235)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: '#E2E8F0' },
+                        grid: { color: '#E2E8F0' },
+                        pointLabels: { font: { size: 12, weight: '600' } },
+                        suggestedMin: 0,
+                        suggestedMax: 4
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 3. Residual Risk (Bar Chart)
+        const ctxResidual = document.getElementById('chartResidual').getContext('2d');
+        new Chart(ctxResidual, {
+            type: 'bar',
+            data: {
+                labels: ['R1: Fuite de Données', 'R2: Indisponibilité'],
+                datasets: [
+                    {
+                        label: 'Risque Brut (Avant)',
+                        data: [12, 16], // From report
+                        backgroundColor: '#94A3B8',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Risque Résiduel (Après)',
+                        data: [4, 6], // From report
+                        backgroundColor: '#10B981',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 16,
+                        title: { display: true, text: 'Niveau de Risque (G x V)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top', align: 'end' }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
