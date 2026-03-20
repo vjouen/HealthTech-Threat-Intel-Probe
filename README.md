@@ -3,6 +3,9 @@ Sonde Python connectée à l'API VirusTotal dans le cadre d'un scénario EBIOS R
 
 Sonde de détection Threat Intel (Scénario HealthTech)
 
+Ce dépôt ne contient pas seulement du code, mais la réponse technique à une analyse de risques formelle.
+Vous trouverez dans le dossier "Livrable GRC" l'étude EBIOS RM complète
+
 Contexte du Projet
 
 Ce projet a été réalisé dans le cadre d'une étude de risques (méthode EBIOS RM) pour une infrastructure de santé fictive. 
@@ -28,7 +31,7 @@ OSINT / Threat Intelligence
 
 Comment l'utiliser :
 
-Cloner le dépôt "Sonde python"
+Télécharger le dépôt "Sonde python"
 
 Insérer votre clé API VirusTotal dans le fichier AUTOMATIQUE.py.
 
@@ -55,6 +58,5 @@ Dans "Ajouter des arguments", mets le nom de ton script : AUTOMATIQUE.py.
 
 Dans "Commencer dans", mets le chemin du dossier où se trouve ton script
 
-Ce dépôt ne contient pas seulement du code, mais la réponse technique à une analyse de risques formelle.
-Vous trouverez dans le dossier "Livrable GRC" l'étude EBIOS RM complète
+
 
