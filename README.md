@@ -32,7 +32,7 @@ Cloner le dépôt.
 
 Insérer votre clé API VirusTotal dans le fichier AUTOMATIQUE.py.
 
-Dans le même dossier que le script Python, crée un nouveau fichier texte simple
+Dans le même dossier que le script Python, crée un nouveau fichier texte simple.
 Nomme-le : "ips_suspectes.txt"
 
 Ajouter quelques IPs (une par ligne) pour tester, par exemple :
@@ -45,3 +45,23 @@ Ajouter quelques IPs (une par ligne) pour tester, par exemple :
 
 Lancer le script Python.
 
+Pour aller plus loin :
+Le déclenchement sans intervention humaine (Windows)
+
+Si tu es sous Windows, tu peux utiliser le Planificateur de tâches :
+
+Appuie sur la touche Windows, tape Planificateur de tâches et ouvre-le.
+
+Clique sur Créer une tâche de base.
+
+Nomme-la "Threat Intel Scanner".
+
+Choisis un déclencheur (ex: "Tous les jours" à "08:00").
+
+Action : Démarrer un programme.
+
+Dans "Programme/script", tape "python".
+
+Dans "Ajouter des arguments", mets le nom de ton script : AUTOMATIQUE.py.
+
+Dans "Commencer dans", mets le chemin du dossier où se trouve ton script
