@@ -8,7 +8,7 @@ Vous trouverez dans le dossier "Livrable GRC" l'étude EBIOS RM complète
 
 
 
-Contexte du Projet
+Contexte du Projet :
 
 Ce projet a été réalisé dans le cadre d'une étude de risques (méthode EBIOS RM) pour une infrastructure de santé fictive. 
 L'objectif était de réduire le risque résiduel face aux menaces de type Ransomware et compromission de la Supply Chain.
