@@ -29,34 +29,34 @@ API REST (VirusTotal)
 
 OSINT / Threat Intelligence
 
-Comment l'utiliser :
+Instructions d'utilisation :
 
-Télécharger le dépôt "Sonde python"
+Téléchargez le dépôt nommé « Sonde python ».
 
-Insérer votre clé API VirusTotal dans le fichier AUTOMATIQUE.py.
+Insérez votre clé API VirusTotal au sein du fichier AUTOMATIQUE.py.
 
-Lancer le script Python.
+Exécutez le script Python.
 
-Pour aller plus loin :
-Le déclenchement sans intervention humaine (Windows)
+Fonctionnalités avancées : Automatisation de l'exécution (Windows)
+Si vous évoluez dans un environnement Windows, vous avez la possibilité de recourir au Planificateur de tâches pour un déclenchement sans intervention humaine :
 
-Si tu es sous Windows, tu peux utiliser le Planificateur de tâches :
+Appuyez sur la touche Windows, saisissez « Planificateur de tâches » dans la barre de recherche, puis ouvrez l'application.
 
-Appuie sur la touche Windows, tape Planificateur de tâches et ouvre-le.
+Cliquez sur l'option « Créer une tâche de base... ».
 
-Clique sur Créer une tâche de base.
+Attribuez-lui l'intitulé « Threat Intel Scanner ».
 
-Nomme-la "Threat Intel Scanner".
+Sélectionnez un déclencheur (par exemple : « Tous les jours » à 08h00).
 
-Choisis un déclencheur (ex: "Tous les jours" à "08:00").
+À l'étape des actions, optez pour « Démarrer un programme ».
 
-Action : Démarrer un programme.
+Dans le champ « Programme/script », saisissez la commande python.
 
-Dans "Programme/script", tape "python".
+Dans la section « Ajouter des arguments (facultatif) », renseignez le nom du script : AUTOMATIQUE.py.
 
-Dans "Ajouter des arguments", mets le nom de ton script : AUTOMATIQUE.py.
+Dans le champ « Commencer dans (facultatif) », indiquez le chemin d'accès absolu du répertoire hébergeant votre script.
 
-Dans "Commencer dans", mets le chemin du dossier où se trouve ton script
+Dans "Commencer dans", indiquez le chemin du dossier où se trouve le script
 
 
 
