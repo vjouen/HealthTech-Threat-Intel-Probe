@@ -6,10 +6,14 @@ Sonde de détection Threat Intel (Scénario HealthTech)
 Ce dépôt ne contient pas seulement du code, mais la réponse technique à une analyse de risques formelle.
 Vous trouverez dans le dossier "Livrable GRC" l'étude EBIOS RM complète
 
+
+
 Contexte du Projet
 
 Ce projet a été réalisé dans le cadre d'une étude de risques (méthode EBIOS RM) pour une infrastructure de santé fictive. 
 L'objectif était de réduire le risque résiduel face aux menaces de type Ransomware et compromission de la Supply Chain.
+
+
 
 Fonctionnalités du script :
 
@@ -21,6 +25,8 @@ Connexion à l'API VirusTotal pour automatiser l'audit des flux sortants.
 
 Génération d'un rapport de conformité/alerte.
 
+
+
 Technologies utilisées :
 
 Python 3
@@ -28,6 +34,8 @@ Python 3
 API REST (VirusTotal)
 
 OSINT / Threat Intelligence
+
+
 
 Instructions d'utilisation :
 
