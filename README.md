@@ -62,8 +62,6 @@ Dans le champ « Programme/script », saisissez la commande python.
 
 Dans la section « Ajouter des arguments (facultatif) », renseignez le nom du script : AUTOMATIQUE.py.
 
-Dans le champ « Commencer dans (facultatif) », indiquez le chemin d'accès absolu du répertoire hébergeant votre script.
-
 Dans "Commencer dans", indiquez le chemin du dossier où se trouve le script
 
 
