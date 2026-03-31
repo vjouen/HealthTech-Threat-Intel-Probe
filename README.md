@@ -21,11 +21,11 @@ Threat Intelligence : Connexion à l'API REST de VirusTotal pour évaluer la ré
 Reporting GRC : Génération d'un rapport de conformité et d'alerte au format CSV (encodage UTF-8-SIG, exploitable directement sur Excel pour les reportings de direction).
 
 # Technologies & Stack
-Langage : Python 3
+* **Langage : Python 3**
 
-API : REST (VirusTotal)
+* **API : REST (VirusTotal)**
 
-Domaines : OSINT / Threat Intelligence / Risk Management
+* **Domaines : OSINT / Threat Intelligence / Risk Management**
 
 # Instructions d'utilisation
 
