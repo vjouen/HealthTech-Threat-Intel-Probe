@@ -7,9 +7,9 @@ Ce dépôt ne contient pas seulement du code, mais la réponse technique à une 
 # Contexte du Projet (Gouvernance)
 Ce projet a été réalisé dans le cadre d'une étude de risques (méthode EBIOS RM) pour une infrastructure de santé fictive. L'objectif stratégique était de réduire le risque résiduel face aux menaces de type :
 
-Déploiement de Ransomware.
+* Déploiement de Ransomware.
 
-Compromission de la Supply Chain (Prestataires).
+* Compromission de la Supply Chain (Prestataires).
 
 # Fonctionnalités Techniques
 Ce script Python agit comme une sonde d'analyse OSINT et d'audit des flux :
