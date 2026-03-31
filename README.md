@@ -31,9 +31,11 @@ Domaines : OSINT / Threat Intelligence / Risk Management
 # Instructions d'utilisation
 
 1. Installation
+
 Clonez ou téléchargez ce dépôt sur votre machine locale, puis ouvrez le dossier.
 
-2. Configuration de l'API
+3. Configuration de l'API
+
 Ouvrez le fichier threat_intel_probe.py avec votre éditeur de code.
 Insérez votre clé API VirusTotal à l'endroit indiqué :
 
@@ -42,6 +44,7 @@ API_KEY = "CLE_API"
 ```
 
 3. Exécution manuelle
+
 Ouvrez un terminal dans le dossier du projet et lancez la commande :
 ```text
 python threat_intel_probe.py
