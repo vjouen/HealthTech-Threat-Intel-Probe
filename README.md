@@ -29,11 +29,11 @@ Ce script Python agit comme une sonde d'analyse OSINT et d'audit des flux :
 
 # Instructions d'utilisation
 
-1. Installation
+**1. Installation**
 
 Clonez ou téléchargez ce dépôt sur votre machine locale, puis ouvrez le dossier.
 
-3. Configuration de l'API
+**2. Configuration de l'API**
 
 Ouvrez le fichier threat_intel_probe.py avec votre éditeur de code.
 Insérez votre clé API VirusTotal à l'endroit indiqué :
@@ -42,7 +42,7 @@ Insérez votre clé API VirusTotal à l'endroit indiqué :
 API_KEY = "CLE_API"
 ```
 
-3. Exécution manuelle
+**3. Exécution manuelle**
 
 Ouvrez un terminal dans le dossier du projet et lancez la commande :
 ```text
