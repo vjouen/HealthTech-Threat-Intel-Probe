@@ -38,11 +38,13 @@ Ouvrez le fichier threat_intel_probe.py avec votre éditeur de code.
 Insérez votre clé API VirusTotal à l'endroit indiqué :
 
 ```Python
-API_KEY = "CLE_API" ```
+API_KEY = "CLE_API"
 
 3. Exécution manuelle
-Ouvrez un terminal dans le dossier du projet et lancez la commande :
-```python threat_intel_probe.py```
+Ouvrez un terminal dans le dossier du projet et lancez la commande :**
+```text
+```bash
+python threat_intel_probe.py```
 
 # Déploiement Continu (Automatisation Windows)
 
