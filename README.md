@@ -14,11 +14,11 @@ Ce projet a été réalisé dans le cadre d'une étude de risques (méthode EBIO
 # Fonctionnalités Techniques
 Ce script Python agit comme une sonde d'analyse OSINT et d'audit des flux :
 
-Extraction automatisée : Identification des adresses IP et Domaines suspects dans les journaux (logs).
+**Extraction automatisée**  : Identification des adresses IP et Domaines suspects dans les journaux (logs).
 
-Threat Intelligence : Connexion à l'API REST de VirusTotal pour évaluer la réputation des indicateurs de compromission (IoC).
+**Threat Intelligence** : Connexion à l'API REST de VirusTotal pour évaluer la réputation des indicateurs de compromission (IoC).
 
-Reporting GRC : Génération d'un rapport de conformité et d'alerte au format CSV (encodage UTF-8-SIG, exploitable directement sur Excel pour les reportings de direction).
+**Reporting GRC** : Génération d'un rapport de conformité et d'alerte au format CSV (encodage UTF-8-SIG, exploitable directement sur Excel pour les reportings de direction).
 
 # Technologies & Stack
 * **Langage : Python 3**
