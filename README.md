@@ -37,7 +37,7 @@ Clonez ou téléchargez ce dépôt sur votre machine locale, puis ouvrez le doss
 Ouvrez le fichier threat_intel_probe.py avec votre éditeur de code.
 Insérez votre clé API VirusTotal à l'endroit indiqué :
 
-'Python'
+Python
 API_KEY = "CLE_API"
 
 3. Exécution manuelle
