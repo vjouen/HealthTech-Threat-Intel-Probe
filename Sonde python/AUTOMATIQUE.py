@@ -16,7 +16,7 @@ import os    # Pour vérifier si les fichiers existent
 from datetime import datetime
 
 # --- CONFIGURATION ---
-API_KEY = "CLE_API"
+API_KEY = "CLE_API" # remplacer ici par la clé API obtenu sur VirusTotal
 BASE_URL = "https://www.virustotal.com/api/v3/ip_addresses/"
 LOG_FILE = "investigation_logs.csv"
 INPUT_FILE = "ips_suspectes.txt"  # Le fichier que le script va lire tout seul
@@ -24,15 +24,15 @@ INPUT_FILE = "ips_suspectes.txt"  # Le fichier que le script va lire tout seul
 def initialiser_log():
     """Crée le fichier CSV avec les colonnes s'il n'existe pas."""
     if not os.path.exists(LOG_FILE):
-        with open(LOG_FILE, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
+        with open(LOG_FILE, 'w', newline='', encoding='utf-8-sig') as f:
+            writer = csv.writer(f, delimiter=';')
             writer.writerow(["Date_Heure", "IP_Analysee", "Score_Malveillant", "Pays", "Proprietaire", "Verdict"])
 
 def sauvegarder_dans_csv(ip, score, pays, proprio, verdict):
     """Écrit une menace dans le journal."""
     date_actuelle = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(LOG_FILE, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
+    with open(LOG_FILE, 'a', newline='', encoding='utf-8-sig') as f:
+        writer = csv.writer(f, delimiter=';')
         writer.writerow([date_actuelle, ip, score, pays, proprio, verdict])
 
 def analyser_ip(ip_cible):
