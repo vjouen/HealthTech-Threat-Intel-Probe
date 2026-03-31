@@ -54,19 +54,19 @@ python threat_intel_probe.py
 
 Pour transformer ce script en véritable sonde de surveillance continue sans intervention humaine, vous pouvez utiliser le Planificateur de tâches Windows :
 
-Ouvrez le Planificateur de tâches (via la barre de recherche Windows).
+* Ouvrez le Planificateur de tâches (via la barre de recherche Windows).
 
-Cliquez sur Créer une tâche de base... et nommez-la Threat Intel Scanner.
+* Cliquez sur Créer une tâche de base... et nommez-la Threat Intel Scanner.
 
-Définissez le déclencheur (ex: Tous les jours à 08h00).
+* Définissez le déclencheur (ex: Tous les jours à 08h00).
 
-Dans l'onglet Action, choisissez Démarrer un programme.
+* Dans l'onglet Action, choisissez Démarrer un programme.
 
-Dans le champ Programme/script, tapez python.
+* Dans le champ Programme/script, tapez python.
 
-Dans le champ Ajouter des arguments, tapez le nom du script : threat_intel_probe.py.
+* Dans le champ Ajouter des arguments, tapez le nom du script : threat_intel_probe.py.
 
-Dans le champ Commencer dans, collez le chemin d'accès complet du dossier contenant le script (ex: C:\Users\Valerian\Documents\Projet_Cyber).
+* Dans le champ Commencer dans, collez le chemin d'accès complet du dossier contenant le script (ex: C:\Users\Valerian\Documents\Projet_Cyber).
 
 
 
