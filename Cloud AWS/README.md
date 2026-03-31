@@ -29,3 +29,18 @@ Ce script respecte le principe de moindre privilège. Il nécessite un compte AW
 Assurez-vous d'avoir installé le SDK AWS pour Python :
 ```bash
 pip install boto3
+
+2. Configuration des accès
+Configurez vos identifiants AWS via l'interface en ligne de commande (CLI) :
+
+```Bash
+aws configure
+(Fournissez votre Access Key et Secret Key associées au compte d'audit).
+
+3. Exécution de l'audit
+Lancez la sonde depuis votre terminal :
+
+```Bash
+python auditeur_cloud.py
+4. Livrable
+Le script générera un fichier nommé rapport_conformite_aws.csv dans le répertoire courant. Ce fichier utilise le séparateur point-virgule (;) et l'encodage UTF-8-SIG pour une intégration native et sans perte de données dans Microsoft Excel.
