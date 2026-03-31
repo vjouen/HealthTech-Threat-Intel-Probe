@@ -46,6 +46,7 @@ Ouvrez un terminal dans le dossier du projet et lancez la commande :
 ```text
 ```bash
 python threat_intel_probe.py
+```
 
 
 # Déploiement Continu (Automatisation Windows)
