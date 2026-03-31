@@ -41,7 +41,7 @@ Instructions d'utilisation :
 
 Téléchargez le dépôt nommé « Sonde python ».
 
-Insérez votre clé API VirusTotal au sein du fichier AUTOMATIQUE.py.
+Insérez votre clé API VirusTotal au sein du fichier threat_intel_probe.py.
 
 Exécutez le script Python.
 
@@ -60,7 +60,7 @@ Sélectionnez un déclencheur (par exemple : « Tous les jours » à 08h00).
 
 Dans le champ « Programme/script », saisissez la commande python.
 
-Dans la section « Ajouter des arguments (facultatif) », renseignez le nom du script : AUTOMATIQUE.py.
+Dans la section « Ajouter des arguments (facultatif) », renseignez le nom du script : threat_intel_probe.py.
 
 Dans "Commencer dans", indiquez le chemin du dossier où se trouve le script
 
