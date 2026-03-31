@@ -1,6 +1,6 @@
 # HealthTech-Threat-Intel-Probe
 
-Sonde Python connectée à l'API VirusTotal : De l'analyse de risques à la remédiation technique.
+## Sonde Python connectée à l'API VirusTotal : De l'analyse de risques à la remédiation technique.
 
 Ce dépôt ne contient pas seulement du code, mais la réponse technique à une analyse de risques formelle. Vous trouverez dans le dossier Livrable GRC l'étude EBIOS RM complète ayant motivé le développement de cet outil.
 
