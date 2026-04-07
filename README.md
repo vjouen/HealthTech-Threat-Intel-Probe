@@ -2,7 +2,7 @@
 
 ## Sonde Python connectée à l'API VirusTotal : De l'analyse de risques à la remédiation technique.
 
-Ce dépôt ne contient pas seulement du code, mais la réponse technique à une analyse de risques formelle. Vous trouverez dans le dossier Livrable GRC l'étude EBIOS RM complète ayant motivé le développement de cet outil.
+Ce dépôt ne contient pas seulement du code, mais la réponse technique à une analyse de risques formelle. Vous trouverez dans le dossier "Livrable GRC" l'étude EBIOS RM complète ayant motivé le développement de cet outil.
 
 ## Contexte du Projet (Gouvernance)
 Ce projet a été réalisé dans le cadre d'une étude de risques (méthode EBIOS RM) pour une infrastructure de santé fictive. L'objectif stratégique était de réduire le risque résiduel face aux menaces de type :
